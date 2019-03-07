@@ -1,258 +1,207 @@
-import pandas as pd
-import plotly.plotly as py
-import plotly
 import plotly.graph_objs as go
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import plotly.plotly as py
-import plotly.graph_objs as go
-import plotly
-import pandas as pd
 import numpy as np
 
+
+
+#1. Define application
 app=dash.Dash(__name__)
 application=app.server
 
 
-
-data1 = pd.read_csv(r'3dScatter.csv')
-data = data1.loc[data1['Year'] == 2010]
-print(data.head())
-x, y, z = np.random.multivariate_normal(np.array([0, 0, 0]), np.eye(3), 400).transpose()
-print(x)
-Lifexp = data.loc[data['Variable'] == 'LIFEXP[0]']
-EdYrs = data.loc[data['Variable'] == 'EDYRSAG15[0]']
-Income = data.loc[data['Variable'] == 'GDPPCP[0]']
-
-trace1 = go.Scatter3d(
-        x=Lifexp['Value'],
-        y=EdYrs['Value'],
-        z=Income['Value'],
-        text=(Lifexp['Country']),
-        mode='markers+text',
-        textposition='top center',
-        textfont=dict(
-            size=10
-        ),
-        marker=dict(
-            size=8,
-
-
-            opacity=0.8
-            )
-
-    )
-data = [trace1]
-layout = go.Layout(title='Exploring Human development using 3D scatterplots',
-                       margin=dict(
-                           l=0,
-                           r=0,
-                           b=0,
-                           t=0
-                       ),
-                       scene=dict(yaxis=dict(
-                           title='Education years'),
-                           xaxis=dict(
-                               title='Life expectancy'),
-                           zaxis=dict(
-                               title='Income'))
-                       )
-
-
-
-
+#2. Define styles
 styles = {
     'pre': {
         'border': 'thin lightgrey solid',
 
     }
 }
-app.layout=html.Div([html.Div(
-    [
-        dcc.Markdown(
-            '''
-            ### Interactive visualization showing analysis of the elements of human development across countries in 2010.
-            '''.replace('  ', ''),
-            className='eight columns offset-by-three'
-        )
-    ], className='row',
-    style={'text-align': 'center', 'margin-bottom': '10px'}
+#3. Layout (Exoskeleton)
+app.layout  = html.Div([html.Div(
+        [
+            dcc.Markdown(
+                '''
+                ### Exploring the Fibonacci sequence using a python function and dashboard
+                The below visualization shows the calculation of the Fibonacci spiral (golden spiral) up to 15 number inputs. 
+                For the code, please visit my [github]("https://github.com/kanishkan91/Py-Dash-GlobalDisplacementswithHoverFunctionality") page.
+                Use the slider under the spiral map to change the digits used in the fibonacci function. The text to the right explains the code used and the updates to the fibonacci code.
+                '''.replace('  ', ''),
+                className='eight columns offset-by-three'
+            )
+        ],className='row',
+        style={'text-align': 'center', 'margin-bottom': '20px'}
+    ),
+
+    html.Div([
+    dcc.Graph(id='graph-with-slider',style={'height':600}
+              ),
+              dcc.Slider(id='slider',
+                         min=3,
+                         max=15,
+                         value=3,
+                         marks={'3': '3', '4': '4', '5': '5', '6': '6', '7': '7',
+                                '8': '8', '9': '9', '10': '10', '11': '11', '12': '12','13': '13','14': '14','15': '15'}
+                         )
+],style={'width': '69%', 'float': 'left', 'display': 'inline-block','font':'15','height':'50%'}),
+dcc.Textarea(
+    placeholder='Enter a value...',
+    value=''
+          'Actual code used in the calculation of the fibonacci sequence-'
+          ''
+          ''
+          ''
+          'The fibonacci function is calculated using the below code,'
+          ''
+          ''
+          '''
+        def Fibonacci(signature, n):
+        r = len(signature)
+        if n < len(signature):
+            signature = signature[:len(signature) - (len(signature) - n)]
+        else:
+            for _ in range(n - r):
+                s = sum(signature[-r:])
+                signature.insert(len(signature) + 1, s)
+
+        return signature'''''   ,
+    style={'display': 'inline-block', 'width': '30%', 'float': 'right','height':'150px'}
 ),
-
-    html.Div([dcc.Graph(id='3dScatter',figure={'data':data,'layout':layout},style={'height':595},
-              hoverData={'points': [{'text': 'Angola'}]})],style={'width': '50%', 'float': 'left', 'display': 'inline-block','font':'15','height':'60%'}),
-
-html.Div([
-        dcc.Graph(id='time-series-LifeExp')
-    ], style={'display': 'inline-block', 'width': '25%','float':'right'}),
-
-html.Div([
-        dcc.Graph(id='time-series-Income'),
-    ], style={'display': 'inline-block', 'width': '25%','float':'right'}),
-
-html.Div([
-        dcc.Graph(id='time-series-Education'),
-    ], style={'display': 'inline-block', 'width': '25%','float':'left'}),
-
-
+html.Br(),
+html.Br(),
+html.Div(id='result',style={'display': 'inline-block', 'width': '30%', 'float': 'right','height':'50px','font':'20'}),
+html.Div(id='result2',style={'display': 'inline-block', 'width': '30%', 'float': 'right','height':'50px'}),
+html.Div(dcc.Textarea(
+    placeholder='Enter a value...',
+    value=
+          'What is the Fibonacci Sequence?'
+          '''
+          
+          The fibonacci sequence is basically a sequence of numbers formed such that each number is the sum of the 2 preceding ones.The sequence forms the so called golden ratio and the golden spiral (described in the visualization).
+          The sequence occurs in biological settings as well, such as branching in trees, arrangement of leaves on a stem, hurricanes.As a great man once said "We will ride the spiral to the end and may just go where no one has been"'''
+          '''
+        '''''   ,
+    style={'display': 'inline-block', 'width': '30%', 'float': 'right','height':'150px'}
+))
 ])
 
+#4. Define First callback
 @app.callback(
-    dash.dependencies.Output('3dScatter', 'figure'))
+    dash.dependencies.Output('graph-with-slider', 'figure'),
+    [dash.dependencies.Input('slider', 'value')])
 
-def update_3dScatter():
-    data = pd.read_csv(r'3dScatter.csv')
-    data = data.loc[data['Year'] == 2010]
-    print(data.head())
-    x, y, z = np.random.multivariate_normal(np.array([0, 0, 0]), np.eye(3), 400).transpose()
-    print(x)
-    Lifexp = data.loc[data['Variable'] == 'LIFEXP[0]']
-    EdYrs = data.loc[data['Variable'] == 'EDYRSAG15[0]']
-    Income = data.loc[data['Variable'] == 'GDPPCP[0]']
+def update_figure(selected_value):
+    def Fibonacci(signature, n):
+        r = len(signature)
+        if n < len(signature):
+            signature = signature[:len(signature) - (len(signature) - n)]
+        else:
+            for _ in range(n - r):
+                s = sum(signature[-r:])
+                signature.insert(len(signature) + 1, s)
 
-    trace1 = go.Scatter3d(
-        x=Lifexp['Value'],
-        y=EdYrs['Value'],
-        z=Income['Value'],
-        text=(Lifexp['Country']),
-        mode='markers+text',
-        textposition='top center',
-        textfont=dict(
-            size=10
-        ),
-        marker=dict(
-            size=8,
-            color=(z + x + y) / 3,  # set color to an array/list of desired values
-            colorscale='Viridis',  # choose a colorscale
-            opacity=0.8
-            , colorbar=dict(
-                title='Colorbar'
-            ))
+        return signature
 
+    r=Fibonacci([1,2],selected_value)
+
+    finalR = []
+    for i in r:
+        a = i * np.pi
+        finalR.append(a)
+
+    max2 = int(max(r))
+    min2 = int(min(r))
+    len2 = len(r)
+    r2 = []
+    for i in range(0, max2):
+        r2.append(i)
+
+    min1 = int(min(finalR))
+    max1 = int(max(finalR))
+
+    ForTheGraph = [i for i in np.linspace(min1, max1, len(r2))]
+
+    data = [
+        go.Scatterpolar(
+            r=r,
+            theta=finalR,
+            mode='markers+text',
+            text=r,
+            textposition='top left',
+            textfont=dict(
+                size=10
+            ),
+            marker=dict(
+                color='peru'
+            )
+        )
+
+        ,
+        go.Scatterpolar(
+            r=r2,
+            theta=ForTheGraph,
+            mode='lines',
+            marker=dict(
+                color='peru'
+            )
+        )
+    ]
+
+    layout = go.Layout(
+        showlegend=False
     )
-    data = [trace1]
-    layout = go.Layout(title='Exploring Human development using 3D scatterplots',
-                       margin=dict(
-                           l=0,
-                           r=0,
-                           b=0,
-                           t=0
-                       ),
-                       scene=dict(yaxis=dict(
-                           title='Education years'),
-                           xaxis=dict(
-                               title='Life expectancy'),
-                           zaxis=dict(
-                               title='Income'))
-                       )
 
-    return {'data': data,
-            'layout': layout}
-
-update_3dScatter()
-
-@app.callback(
-    dash.dependencies.Output('time-series-LifeExp','figure'),
-    [dash.dependencies.Input('3dScatter','hoverData')])
-
-def update_time_series(hoverData):
-    print('DF Heads')
-    years=['1990','1995','2000','2005','2010','2015']
-    print(hoverData)
-    print(hoverData['points'][0]['text'])
-    df=data1[data1['Country']==hoverData['points'][0]['text']]
-    df = df.loc[df['Variable'] == 'LIFEXP[0]']
-    df=df[df.Year.isin(years)]
-    title = '<b>{}</b><br>{}'.format('Life expectancy'," "+str(hoverData['points'][0]['text']))
     return {
-        'data': [go.Scatter(
-            x=df['Year'],
-            y=df['Value'],
-            mode='lines+markers'
-        )],
-        'layout': {
-            'height': 400,
-            'margin': {'l': 20, 'b': 30, 'r': 10, 't': 10},
-            'annotations': [{
-                'x': 0, 'y': 0.93, 'xanchor': 'left', 'yanchor': 'bottom',
-                'xref': 'paper', 'yref': 'paper', 'showarrow': False,
-                'align': 'left', 'bgcolor': 'rgba(255, 255, 255, 0.5)',
-                'text': title
-
-            }],
-            'yaxis': {'type': 'linear'},
-            'xaxis': {'showgrid': False}
-        }
+        'data':data,
+        'layout':layout
     }
-
+#5. Define second callback
 @app.callback(
-    dash.dependencies.Output('time-series-Income','figure'),
-    [dash.dependencies.Input('3dScatter','hoverData')])
+    dash.dependencies.Output('result', 'children'),
+    [dash.dependencies.Input('slider', 'value')
+     ]
+)
+def update_result(value):
+    def Fibonacci(signature, n):
+        r = len(signature)
+        if n < len(signature):
+            signature = signature[:len(signature) - (len(signature) - n)]
+        else:
+            for _ in range(n - r):
+                s = sum(signature[-r:])
+                signature.insert(len(signature) + 1, s)
 
-def update_time_series(hoverData):
-    print('DF Heads')
-    years=['1990','1995','2000','2005','2010','2015']
-    print(hoverData)
-    print(hoverData['points'][0]['text'])
-    df=data1[data1['Country']==hoverData['points'][0]['text']]
-    df = df.loc[df['Variable'] == 'GDPPCP[0]']
-    df=df[df.Year.isin(years)]
-    title = '<b>{}</b><br>{}'.format('Income level'," "+str(hoverData['points'][0]['text']))
-    return {
-        'data': [go.Scatter(
-            x=df['Year'],
-            y=df['Value'],
-            mode='lines+markers'
-        )],
-        'layout': {
-            'height': 400,
-            'margin': {'l': 20, 'b': 30, 'r': 10, 't': 10},
-            'annotations': [{
-                'x': 0, 'y': 0.93, 'xanchor': 'left', 'yanchor': 'bottom',
-                'xref': 'paper', 'yref': 'paper', 'showarrow': False,
-                'align': 'left', 'bgcolor': 'rgba(255, 255, 255, 0.5)',
-                'text': title
+        return signature
 
-            }],
-            'yaxis': {'type': 'linear'},
-            'xaxis': {'showgrid': False}
-        }
-    }
+    r=Fibonacci([1,2],value)
+    el=r[-1]
 
+
+
+    return "The next number in the Fibonacci sequence is: {}".format(el)
+
+#5. Define third callback
 @app.callback(
-    dash.dependencies.Output('time-series-Education','figure'),
-    [dash.dependencies.Input('3dScatter','hoverData')])
+    dash.dependencies.Output('result2', 'children'),
+    [dash.dependencies.Input('slider', 'value')
+     ]
+)
+def update_result(value):
+    def Fibonacci(signature, n):
+        r = len(signature)
+        if n < len(signature):
+            signature = signature[:len(signature) - (len(signature) - n)]
+        else:
+            for _ in range(n - r):
+                s = sum(signature[-r:])
+                signature.insert(len(signature) + 1, s)
 
-def update_time_series(hoverData):
-    print('DF Heads')
-    years=['1990','1995','2000','2005','2010','2015']
-    print(hoverData)
-    print(hoverData['points'][0]['text'])
-    df=data1[data1['Country']==hoverData['points'][0]['text']]
-    df = df.loc[df['Variable'] == 'EDYRSAG15[0]']
-    df=df[df.Year.isin(years)]
-    title = '<b>{}</b><br>{}'.format('Education Years'," "+str(hoverData['points'][0]['text']))
-    return {
-        'data': [go.Scatter(
-            x=df['Year'],
-            y=df['Value'],
-            mode='lines+markers'
-        )],
-        'layout': {
-            'height': 400,
-            'margin': {'l': 20, 'b': 30, 'r': 10, 't': 10},
-            'annotations': [{
-                'x': 0, 'y': 0.93, 'xanchor': 'left', 'yanchor': 'bottom',
-                'xref': 'paper', 'yref': 'paper', 'showarrow': False,
-                'align': 'left', 'bgcolor': 'rgba(255, 255, 255, 0.5)',
-                'text': title
+        return signature
 
-            }],
-            'yaxis': {'type': 'linear'},
-            'xaxis': {'showgrid': False}
-        }
-    }
+    r=Fibonacci([1,2],value)
+
+    return "Therefore the updated Fibonacci sequence is: {}".format(r)
 
 
 
