@@ -114,7 +114,7 @@ def update_figure(selected_value):
     min2 = int(min(r))
     len2 = len(r)
     r2 = []
-    for i in range(0, max2):
+    for i in range(0, max2+1):
         r2.append(i)
 
     min1 = int(min(finalR))
